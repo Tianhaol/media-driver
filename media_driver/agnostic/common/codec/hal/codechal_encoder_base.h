@@ -1743,6 +1743,8 @@ public:
     PMOS_RESOURCE                   presMbConstSurface = nullptr;
     PMOS_RESOURCE                   presVMEOutSurface = nullptr;
 
+    uint8_t                         m_rawSurfAlignment = 4;     //!< Raw surface alignment
+
 #if (_DEBUG || _RELEASE_INTERNAL)
     bool m_mmcUserFeatureUpdated;  //!< indicate if the user feature is updated with MMC state
 #endif
@@ -2188,6 +2190,16 @@ public:
     //!          MOS_STATUS_SUCCESS if success, else fail reason
     //!
     virtual MOS_STATUS CheckResChangeAndCsc();
+
+    //!
+    //! \brief    Check if surface meet HEVC SPEC requirement
+    //!
+    //! \param    [in] surface
+    //!           MOS surface
+    //!
+    //! \return   MOS_STATUS_SUCCESS if meet, otherwise MOS_STATUS_INVALID_PARAMETER
+    //!
+    MOS_STATUS CheckSurface(const MOS_SURFACE& surface);
 
     //!
     //! \brief  Destroy encode state

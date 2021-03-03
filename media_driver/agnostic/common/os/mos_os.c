@@ -272,6 +272,11 @@ MOS_STATUS Mos_OsGetBitsPerPixel(
        *piBpp = 8;
         break;
 
+    case Format_Y410:
+    case Format_Y210:
+        *piBpp = 32;
+        break;
+
     default:
         MOS_OS_ASSERTMESSAGE("Format '%d' not supported.", Format);
         *piBpp = 0;

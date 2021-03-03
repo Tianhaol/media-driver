@@ -1309,6 +1309,33 @@ MOS_STATUS CodechalEncoderState::CheckResChangeAndCsc()
     return MOS_STATUS_SUCCESS;
 }
 
+MOS_STATUS CodechalEncoderState::CheckSurface(const MOS_SURFACE& surface)
+{
+    uint32_t height = 0;
+    uint32_t width = 0;
+    if (surface.UPlaneOffset.iSurfaceOffset)
+    {
+        width = surface.dwPitch;
+        height = (surface.UPlaneOffset.iSurfaceOffset - surface.dwOffset) / surface.dwPitch;
+    }
+    else
+    {
+        // check width of surface calculated from picth  >= alighed width for encoding
+        uint32_t Bitspp = 0;
+        CODECHAL_ENCODE_CHK_STATUS_RETURN(m_osInterface->pfnGetBitsPerPixel(m_osInterface, surface.Format, &Bitspp));
+        CODECHAL_ENCODE_CHK_COND_RETURN((Bitspp == 0), "the bits per pxiel is invalid!");
+        width = surface.dwPitch * 8 / Bitspp;
+        height = surface.dwSize / surface.dwPitch;
+    }
+
+    // check width and height of surface
+    CODECHAL_ENCODE_CHK_COND_RETURN((width < m_frameWidth),
+                                    "The width of surface is invalid");
+    CODECHAL_ENCODE_CHK_COND_RETURN((height < m_frameHeight),
+                                    "The height of surface is invalid");
+    return MOS_STATUS_SUCCESS;
+}
+
 // Function to allocate all resources common to all encoders
 MOS_STATUS CodechalEncoderState::AllocateResources()
 {
@@ -4606,6 +4633,7 @@ MOS_STATUS CodechalEncoderState::ExecuteEnc(
 
         CODECHAL_ENCODE_CHK_NULL_RETURN(encodeParams->psRawSurface);
         CodecHalGetResourceInfo(m_osInterface, encodeParams->psRawSurface);
+        CODECHAL_ENCODE_CHK_STATUS_RETURN(CheckSurface(*encodeParams->psRawSurface));
         if (encodeParams->bMbQpDataEnabled)
         {
             CodecHalGetResourceInfo(m_osInterface, encodeParams->psMbQpDataSurface);

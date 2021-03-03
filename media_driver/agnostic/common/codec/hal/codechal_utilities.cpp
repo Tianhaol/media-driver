@@ -521,6 +521,7 @@ MOS_STATUS CodecHalGetResourceInfo(
     surface->dwPitch       = details.dwPitch;
     surface->dwDepth       = details.dwDepth;
     surface->dwQPitch      = details.dwQPitch;
+    surface->dwSize        = details.dwSize;
     surface->bArraySpacing = details.bArraySpacing;
     surface->TileType      = details.TileType;
     surface->TileModeGMM   = details.TileModeGMM;
